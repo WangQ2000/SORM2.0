@@ -32,11 +32,12 @@ public class MySqlQuery implements Query {
 
 	public static void main(String[] args) {
 		Emp_info emp_info = new Emp_info();
+		emp_info.setId(4);
 		emp_info.setEname("WANGQING1");
-		emp_info.setAge(21);
+		emp_info.setAge(20);
 		emp_info.setHireDate(new Date(System.currentTimeMillis()));
 		emp_info.setSalary(8000.0);
-		new MySqlQuery().insert(emp_info);
+		new MySqlQuery().update(emp_info, new String[]{"age"});
 	}
 
 	@Override
@@ -112,8 +113,26 @@ public class MySqlQuery implements Query {
 
 	@Override
 	public int update(Object object, String[] fieldNames) {
+		//object{"username","pwd"}-->update 表名 set username = ?,pwd = ? wherer id = ?
+		
+		Class cls = object.getClass();
+		TableInfo tableInfo = TableContext.poClassTableMap.get(cls);
+		List<Object> params = new ArrayList<>();// 存储参数对象
+		ColumnInfo onlyPriKey = tableInfo.getOnlyPriKey();// 主键
+		StringBuilder sql = new StringBuilder();
+		sql.append("update " + tableInfo.getTname() + " set ");
+		
+		for(String fname:fieldNames) {
+			Object fvalue = ReflectUtils.invokeGet(fname, object);
+			params.add(fvalue);
+			sql.append(fname+"=?,");
+		}
+		sql.setCharAt(sql.length()-1, ' ');
+		sql.append("where "+onlyPriKey.getName()+"=?;");
+		//将主键对应的值也放入列表中
+		params.add(ReflectUtils.invokeGet(onlyPriKey.getName(), object));
 
-		return 0;
+		return excuteDML(sql.toString(), params.toArray());
 	}
 
 	@Override
