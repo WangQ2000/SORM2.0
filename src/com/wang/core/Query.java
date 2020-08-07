@@ -23,6 +23,7 @@ public interface Query {
 	
 	/**
 	 * 	将对象存储到数据库中
+	 * 把对象中不为null的属性数据存储到数据库，如果数字为null则存储0
 	 * @param object 要存储的对象
 	 */
 	public void insert(Object object);

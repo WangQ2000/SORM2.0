@@ -2,6 +2,8 @@ package com.wang.core;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 import com.wang.bean.Configuration;
 import com.wang.resources.Resources;
@@ -39,6 +41,31 @@ public class DBManager {
 			e.printStackTrace();
 		}
 		return connection;
+	}
+
+	// ¹Ø±Õ·þÎñ
+	public static void close(ResultSet rs, Statement ps, Connection conn) {
+		try {
+			if (rs != null) {
+				rs.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			if (ps != null) {
+				ps.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			if (conn != null) {
+				conn.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static Configuration getConf() {

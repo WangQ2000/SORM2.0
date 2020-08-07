@@ -1,11 +1,7 @@
 package com.wang.utils;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-import com.wang.resources.Resources;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * JDBCUtils封装常用的JDBC操作
@@ -15,43 +11,21 @@ import com.wang.resources.Resources;
  * @date 2020-8-7
  */
 public class JDBCUtils {
-	// 获取连接
-	public static Connection getConnection() {
-		Connection connection = null;
-		try {
-			// 加载驱动类
-			Class.forName(Resources.getCalssname());
-			// 建立连接
-			connection = DriverManager.getConnection(Resources.getUrl(), Resources.getUser(), Resources.getPassword());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	/**
+	 * 给SQL语句设置参数
+	 * @param preparedStatement
+	 * @param params
+	 */
+	public static void handleParams(PreparedStatement preparedStatement,Object[] params) {
+		if (params != null) {
+			for (int i = 0; i < params.length; i++) {
+				try {
+					preparedStatement.setObject(i + 1, params[i]);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
-		return connection;
 	}
 
-	// 关闭服务
-	public static void close(ResultSet rs, Statement ps, Connection conn) {
-		try {
-			if (rs != null) {
-				rs.close();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			if (ps != null) {
-				ps.close();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			if (conn != null) {
-				conn.close();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }
