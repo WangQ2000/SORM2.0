@@ -33,7 +33,7 @@ public interface Query {
 	 * @param id 主键值
 	 * @return 执行语句影响的记录行数
 	 */
-	public int delete(Class cls,int id);//delete from cls where id = id;
+	public int delete(Class cls,Object id);//delete from cls where id = id;
 	
 	/**
 	 * 	删除对象在数据库中对应的记录（类对应到表，主键值对应到记录）

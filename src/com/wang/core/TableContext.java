@@ -10,6 +10,7 @@ import java.util.Map;
 import com.wang.bean.ColumnInfo;
 import com.wang.bean.TableInfo;
 import com.wang.utils.JavaFileUtiles;
+import com.wang.utils.StringUtils;
 
 /**
  * 负责获取管理数据库所有表结构和类结构的关系，并根据表结构生成类结构
@@ -72,6 +73,8 @@ public class TableContext {
 		// 更新类结构
 		updateJavaPOFile();
 
+		//加载po包下的类
+		loadPoTable();
 	}
 
 	/**
@@ -91,6 +94,22 @@ public class TableContext {
 		for (TableInfo t : map.values()) {
 			JavaFileUtiles.createJavaPoFile(t, new MysqlTypeConvertor());
 			System.out.println(t.getTname());
+		}
+	}
+
+	/**
+	 * 加载po包下的类
+	 */
+	public static void loadPoTable() {
+		for (TableInfo tableInfo : tables.values()) {
+			Class c = null;
+			try {
+				c = Class.forName(DBManager.getConf().getPo_package() + "."
+						+ StringUtils.firstChar2UpperCase(tableInfo.getTname()));
+				poClassTableMap.put(c, tableInfo);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
