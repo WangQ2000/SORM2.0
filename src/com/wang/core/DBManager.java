@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 import com.wang.bean.Configuration;
+import com.wang.pool.DBConnPool;
 import com.wang.resources.Resources;
 
 /**
@@ -27,10 +28,20 @@ public class DBManager {
 		conf.setUsingDB(Resources.getUsingdb());
 		conf.setSrc_path(Resources.getSrcPath());
 		conf.setPo_package(Resources.getPoPackage());
+		conf.setQuery_class(Resources.getQueryClass());
+		conf.setPOOL_MIN_SIZE(Resources.getPoolMinSize());
+		conf.setPOOL_MAX_SIZE(Resources.getPoolMaxSize());
+
+		// 加载TableContext
+		System.out.println(TableContext.class);
 	}
 
-	// 获取连接
-	public static Connection getConnection() {
+	/**
+	 * 创建新连接
+	 * 
+	 * @return
+	 */
+	public static Connection createConnection() {
 		Connection connection = null;
 		try {
 			// 加载驱动类
@@ -43,7 +54,24 @@ public class DBManager {
 		return connection;
 	}
 
-	// 关闭服务
+	/**
+	 * 获取池中的连接
+	 * 
+	 * @return
+	 */
+	public static Connection getConnection() {
+		Connection connection = null;
+		connection = DBConnPool.getConnection();
+		return connection;
+	}
+
+	/**
+	 * 关闭服务
+	 * 
+	 * @param rs
+	 * @param ps
+	 * @param conn
+	 */
 	public static void close(ResultSet rs, Statement ps, Connection conn) {
 		try {
 			if (rs != null) {
@@ -61,7 +89,7 @@ public class DBManager {
 		}
 		try {
 			if (conn != null) {
-				conn.close();
+				DBConnPool.closeConnection(conn);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
